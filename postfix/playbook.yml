@@ -1,0 +1,35 @@
+---
+- name: Manage Postfix installation
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Postfix
+      apt:
+        name: postfix
+        state: present
+      when: "'init' in ansible_run_tags and 'postfix' in ansible_run_tags"
+      tags: init
+
+    - name: Ensure Postfix is started and enabled
+      service:
+        name: postfix
+        state: started
+        enabled: yes
+      when: "'init' in ansible_run_tags and 'postfix' in ansible_run_tags"
+      tags: init
+
+    - name: Remove Postfix
+      apt:
+        name: postfix
+        state: absent
+      when: "'drop' in ansible_run_tags and 'postfix' in ansible_run_tags"
+      tags: drop
+
+    - name: Ensure Postfix is stopped
+      service:
+        name: postfix
+        state: stopped
+        enabled: no
+      when: "'drop' in ansible_run_tags and 'postfix' in ansible_run_tags"
+      tags: drop
+

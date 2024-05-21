@@ -1,0 +1,52 @@
+---
+- name: Create user and set up SSH key
+  hosts: all
+  become: true
+  vars:
+    user_name: user1
+    ssh_key_path: /home/{{ user_name }}/.ssh/id_rsa
+    ssh_pub_key_path: /home/{{ user_name }}/.ssh/id_rsa.pub
+    # Зашифрованное содержимое приватного ключа
+    vault_ssh_key: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        61346535373435393136323331333933633639373937626538343934613662356362323931613261
+        3761363831386232663463656532363339626438643363640a313364663631373662303937386138
+        33306266383265666532346235363539323561663666333863336366383735336139613837313237
+        3236656138383135370a336265643030636264643165666262313063313239376234313665653336
+        6530
+    # Содержимое публичного ключа
+    public_key: |
+      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4R4q1x2+Z9p5zD9k+5J6Y7iJz9DhA7vH0VpuEp9rYp/AosUwa9dPXSTO2Ub+NaT92KyJf0hzQ5I+/2BfSL0D/hvsQDdU8l0XK2ljB0w1e8ULlRRcpAXF4z7zI0F7Y1a1m93SbGBpu5YFY7lToZKb1u8bjtMn7qleLlIzzkA6NOQo5FwpBLoD/oyTh/1mWQJ/kRsa5G5Z9JbXxFJJXP61JGxO9Mfr3QoKgZ6RBxOtFLfgJX7B3TtU/+qFW4ISd4nYyr3QPyZB9M2f+T9Rf2sz2I5/5y9D/z6a5DUFZ+/z6S5XxOJZB7UpiXFOJt9l1z1uTq/lOByhsW1zX0ZDJcnT1UblU2D user1@localhost
+
+  tasks:
+    - name: Ensure the user exists
+      user:
+        name: "{{ user_name }}"
+        state: present
+        create_home: yes
+
+    - name: Create .ssh directory
+      file:
+        path: /home/{{ user_name }}/.ssh
+        state: directory
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0700'
+
+    - name: Copy the private key to the user .ssh directory
+      copy:
+        content: "{{ vault_ssh_key }}"
+        dest: "{{ ssh_key_path }}"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0600'
+      no_log: true
+
+    - name: Copy the public key to the user .ssh directory
+      copy:
+        content: "{{ public_key }}"
+        dest: "{{ ssh_pub_key_path }}"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+
