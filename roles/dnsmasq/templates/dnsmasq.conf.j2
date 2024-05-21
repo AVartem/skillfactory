@@ -1,0 +1,26 @@
+# templates/dnsmasq.conf.j2
+
+# Configuration file for dnsmasq.
+
+# Listen on this specific port instead of the standard DNS port.
+#port=5353
+
+# Listen on this specific IP address instead of all IP addresses.
+#interface=
+
+# Enable logging of queries.
+log-queries
+
+# Enable log.
+log-facility=/var/log/dnsmasq.log
+
+# Set the size of the DNS cache.
+cache-size=1000
+
+# Forward DNS requests to these upstream DNS servers.
+server=8.8.8.8
+server=8.8.4.4
+
+# Never forward addresses in the non-routed address spaces.
+bogus-priv
+

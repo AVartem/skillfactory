@@ -1,0 +1,5 @@
+---
+- name: Restart sudo
+  command: /usr/bin/sudo service sudo restart
+  become: true
+

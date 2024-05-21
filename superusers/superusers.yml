@@ -1,0 +1,34 @@
+---
+- name: Create superusers group and configure sudo access
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure group 'superusers' exists
+      group:
+        name: superusers
+        state: present
+
+    - name: Ensure user2 exists and is in the superusers group
+      user:
+        name: user2
+        groups: superusers
+        append: yes
+        state: present
+
+    - name: Ensure user3 exists and is in the superusers group
+      user:
+        name: user3
+        groups: superusers
+        append: yes
+        state: present
+
+    - name: Configure sudoers file for superusers group
+      lineinfile:
+        path: /etc/sudoers.d/superusers
+        create: yes
+        state: present
+        line: "%superusers ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
+      notify:
+        - Restart sudo
+
