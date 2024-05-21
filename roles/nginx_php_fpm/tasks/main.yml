@@ -17,7 +17,7 @@
 
 - name: Create document root
   file:
-    path: /var/www/html
+    path: /opt/nginx/ansible
     state: directory
     owner: www-data
     group: www-data
@@ -27,7 +27,7 @@
 - name: Create index.php
   copy:
     content: "<?php phpinfo(); ?>"
-    dest: /var/www/html/index.php
+    dest: /opt/nginx/ansible/index.php
     owner: www-data
     group: www-data
     mode: '0644'
@@ -38,7 +38,7 @@
     src: default.j2
     dest: /etc/nginx/sites-available/default
   notify:
-    - Restart Nginx
+    - Reload Nginx
   become: true
 
 - name: Ensure PHP-FPM is started and enabled

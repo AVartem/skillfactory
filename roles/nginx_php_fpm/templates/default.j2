@@ -1,10 +1,9 @@
-# templates/default.j2
 
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    root /var/www/html;
+    root /opt/nginx/ansible;
     index index.php index.html index.htm;
 
     server_name _;
