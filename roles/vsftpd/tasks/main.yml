@@ -1,0 +1,15 @@
+---
+# tasks/main.yml
+- name: Install vsftpd
+  apt:
+    name: vsftpd
+    state: present
+  become: true
+
+- name: Ensure vsftpd is started and enabled
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
+  become: true
+
